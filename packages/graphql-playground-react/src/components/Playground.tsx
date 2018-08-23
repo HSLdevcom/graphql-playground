@@ -88,6 +88,7 @@ export interface Props {
   createApolloLink?: (session: Session) => ApolloLink
   workspaceName?: string
   schema?: GraphQLSchema
+  resultTooltip?: any
 }
 
 export interface ReduxProps {
@@ -299,6 +300,7 @@ export class Playground extends React.PureComponent<Props & ReduxProps, State> {
               <FileEditor />
             ) : (
               <GraphQLEditor
+                resultTooltip={this.props.resultTooltip}
                 shareEnabled={this.props.shareEnabled}
                 schema={this.state.schema}
               />
