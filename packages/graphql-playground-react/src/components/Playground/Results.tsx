@@ -9,6 +9,7 @@ import { styled, withProps } from '../../styled'
 import { ResponseRecord } from '../../state/sessions/reducers'
 
 export interface Props {
+  tooltip?: any
   setRef: (ref: any) => void
 }
 
@@ -22,7 +23,11 @@ const defaultResponseRecord = new ResponseRecord({
   resultID: 'default-id',
 })
 
-const Results: React.SFC<Props & ReduxProps> = ({ setRef, responses }) => {
+const Results: React.SFC<Props & ReduxProps> = ({
+  tooltip,
+  setRef,
+  responses,
+}) => {
   const response1 = responses.get(0) || defaultResponseRecord
   const isSubscription = responses.size > 1
   return (
@@ -60,6 +65,7 @@ const Results: React.SFC<Props & ReduxProps> = ({ setRef, responses }) => {
               )}
             <ResultWrapper isSubscription={responses.size > 1}>
               <ResultViewer
+                tooltip={tooltip}
                 value={response.date}
                 isSubscription={isSubscription}
               />
