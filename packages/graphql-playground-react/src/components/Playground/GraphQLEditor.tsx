@@ -66,7 +66,7 @@ import { ResponseRecord } from '../../state/sessions/reducers'
  */
 
 export interface Props {
-  tooltip?: any
+  resultTooltip?: any
   onRef?: any
   shareEnabled?: boolean
   schema?: GraphQLSchema
@@ -299,7 +299,7 @@ class GraphQLEditor extends React.PureComponent<
               {this.props.queryRunning &&
                 this.props.responses.size === 0 && <Spinner />}
               <Results
-                tooltip={this.props.tooltip}
+                tooltip={this.props.resultTooltip}
                 setRef={this.setResultComponent}
               />
               {!this.props.queryRunning &&
