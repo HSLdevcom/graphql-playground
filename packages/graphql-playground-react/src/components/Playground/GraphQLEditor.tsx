@@ -66,6 +66,7 @@ import { ResponseRecord } from '../../state/sessions/reducers'
  */
 
 export interface Props {
+  tooltip?: any
   onRef?: any
   shareEnabled?: boolean
   schema?: GraphQLSchema
@@ -297,7 +298,10 @@ class GraphQLEditor extends React.PureComponent<
               <ExecuteButton />
               {this.props.queryRunning &&
                 this.props.responses.size === 0 && <Spinner />}
-              <Results setRef={this.setResultComponent} />
+              <Results
+                tooltip={this.props.tooltip}
+                setRef={this.setResultComponent}
+              />
               {!this.props.queryRunning &&
                 (!this.props.responses || this.props.responses.size === 0) && (
                   <Intro>Hit the Play Button to get a response here</Intro>
