@@ -13,6 +13,7 @@ export interface Props {
   value: string
   isSubscription: boolean
   hideGutters?: boolean
+  tooltip?: any
 }
 
 /**
@@ -39,6 +40,20 @@ export class ResultViewer extends React.Component<Props, {}> {
     require('codemirror/addon/search/jump-to-line')
     require('codemirror/keymap/sublime')
     require('codemirror-graphql/results/mode')
+
+    if (this.props.tooltip) {
+      require('codemirror-graphql/utils/info-addon')
+      const tooltipDiv = document.createElement('div')
+      CodeMirror.registerHelper(
+        'info',
+        'graphql-results',
+        (token, options, cm, pos) => {
+          const Tooltip = this.props.tooltip
+          ReactDOM.render(<Tooltip token={token} />, tooltipDiv)
+          return tooltipDiv
+        },
+      )
+    }
 
     const gutters: any[] = []
     if (!this.props.hideGutters) {
