@@ -44,6 +44,7 @@ const Results: React.SFC<Props & ReduxProps> = ({
             )}
           <ResultWrapper isSubscription={isSubscription}>
             <ResultViewer
+              tooltip={tooltip}
               value={response1.date}
               isSubscription={isSubscription}
             />
