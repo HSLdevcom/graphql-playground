@@ -78,6 +78,7 @@ export class ResultViewer extends React.Component<Props, {}> {
       keyMap: 'sublime',
       foldGutter,
       gutters,
+      info: Boolean(this.props.tooltip),
       extraKeys: {
         // Persistent search box in Query Editor
         'Cmd-F': 'findPersistent',
