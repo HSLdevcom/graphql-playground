@@ -252,6 +252,7 @@ class GraphQLEditor extends React.PureComponent<
                 onHintInformationRender={this.handleHintInformationRender}
                 onRunQuery={this.runQueryAtCursor}
                 onClickReference={this.handleClickReference}
+                onEdit={this.setQuery}
               />
               <VariableEditor
                 isOpen={this.props.variableEditorOpen}

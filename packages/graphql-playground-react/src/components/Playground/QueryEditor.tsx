@@ -39,6 +39,7 @@ export interface Props {
   onRunQuery?: () => void
   onClickReference?: (reference: any) => void
   getRef?: (ref: QueryEditor) => void
+  onEdit?: (query: string) => void
 }
 
 export interface ReduxProps {
@@ -275,6 +276,10 @@ export class QueryEditor extends React.PureComponent<Props & ReduxProps, {}> {
   }
 
   private onEdit = () => {
+    if (this.props.onEdit) {
+      this.props.onEdit(this.editor.getValue())
+    }
+
     if (!this.ignoreChangeEvent && this.props.onChange) {
       this.cachedValue = this.editor.getValue()
       this.props.onChange(this.cachedValue)
