@@ -25,65 +25,64 @@ const defaultResponseRecord = new ResponseRecord({
   resultID: 'default-id',
 })
 
-const Results: React.SFC<Props & ReduxProps> = ({
-  schema,
-  query,
-  tooltip,
-  setRef,
-  responses,
-}) => {
-  const response1 = responses.get(0) || defaultResponseRecord
-  const isSubscription = responses.size > 1
-  return (
-    <ResultWindow innerRef={setRef} isSubscription={isSubscription}>
-      {responses.size <= 1 ? (
-        <Response key={'first'} isSubscription={isSubscription}>
-          {responses.size > 1 &&
-            response1.time && (
-              <SubscriptionTime>
-                <SubscriptionTimeText>
-                  {ageOfDate(response1.time)}
-                </SubscriptionTimeText>
-              </SubscriptionTime>
-            )}
-          <ResultWrapper isSubscription={isSubscription}>
-            <ResultViewer
-              schema={schema}
-              query={query}
-              tooltip={tooltip}
-              value={response1.date}
-              isSubscription={isSubscription}
-            />
-          </ResultWrapper>
-        </Response>
-      ) : (
-        responses.map(response => (
-          <Response
-            key={response.resultID || String(response.time)}
-            isSubscription={isSubscription}
-          >
-            {responses.size > 1 &&
-              response.time && (
+export class Results extends React.Component<Props & ReduxProps> {
+  render() {
+    const response1 = this.props.responses.get(0) || defaultResponseRecord
+    const isSubscription = this.props.responses.size > 1
+    return (
+      <ResultWindow
+        innerRef={this.props.setRef}
+        isSubscription={isSubscription}
+      >
+        {this.props.responses.size <= 1 ? (
+          <Response key={'first'} isSubscription={isSubscription}>
+            {this.props.responses.size > 1 &&
+              response1.time && (
                 <SubscriptionTime>
                   <SubscriptionTimeText>
-                    {ageOfDate(response.time)}
+                    {ageOfDate(response1.time)}
                   </SubscriptionTimeText>
                 </SubscriptionTime>
               )}
-            <ResultWrapper isSubscription={responses.size > 1}>
+            <ResultWrapper isSubscription={isSubscription}>
               <ResultViewer
-                schema={schema}
-                query={query}
-                tooltip={tooltip}
-                value={response.date}
+                schema={this.props.schema}
+                query={this.props.query}
+                tooltip={this.props.tooltip}
+                value={response1.date}
                 isSubscription={isSubscription}
               />
             </ResultWrapper>
           </Response>
-        ))
-      )}
-    </ResultWindow>
-  )
+        ) : (
+          this.props.responses.map(response => (
+            <Response
+              key={response.resultID || String(response.time)}
+              isSubscription={isSubscription}
+            >
+              {this.props.responses.size > 1 &&
+                response.time && (
+                  <SubscriptionTime>
+                    <SubscriptionTimeText>
+                      {ageOfDate(response.time)}
+                    </SubscriptionTimeText>
+                  </SubscriptionTime>
+                )}
+              <ResultWrapper isSubscription={this.props.responses.size > 1}>
+                <ResultViewer
+                  schema={this.props.schema}
+                  query={this.props.query}
+                  tooltip={this.props.tooltip}
+                  value={response.date}
+                  isSubscription={isSubscription}
+                />
+              </ResultWrapper>
+            </Response>
+          ))
+        )}
+      </ResultWindow>
+    )
+  }
 }
 
 const mapStateToProps = createStructuredSelector({
