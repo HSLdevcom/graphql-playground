@@ -119,8 +119,13 @@ export interface ToolbarButtonProps extends SimpleProps {
   label: string
 }
 
+interface State {
+  query: string
+}
+
 class GraphQLEditor extends React.PureComponent<
-  Props & LocalThemeInterface & ReduxProps
+  Props & LocalThemeInterface & ReduxProps,
+  State
 > {
   public codeMirrorSizer
   public queryEditorComponent
@@ -134,14 +139,13 @@ class GraphQLEditor extends React.PureComponent<
   private queryVariablesRef
   private httpHeadersRef
 
-  private query: string
-
-  getQuery() {
-    return this.query
+  constructor(props) {
+    super(props)
+    this.state = { query: props.query }
   }
 
   setQuery(query: string) {
-    this.query = query
+    this.setState({ query })
   }
 
   componentDidMount() {
@@ -311,7 +315,7 @@ class GraphQLEditor extends React.PureComponent<
                 this.props.responses.size === 0 && <Spinner />}
               <Results
                 schema={this.props.schema}
-                query={this.getQuery}
+                query={this.state.query}
                 tooltip={this.props.resultTooltip}
                 setRef={this.setResultComponent}
               />
