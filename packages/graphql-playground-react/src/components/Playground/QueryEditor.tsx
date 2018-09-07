@@ -59,6 +59,7 @@ export class QueryEditor extends React.PureComponent<Props & ReduxProps, {}> {
   private editor: any
   private ignoreChangeEvent: boolean
   private node: any
+  private onEditListener: any
 
   constructor(props) {
     super(props)
@@ -69,6 +70,10 @@ export class QueryEditor extends React.PureComponent<Props & ReduxProps, {}> {
     this.cachedValue = props.value || ''
     if (this.props.getRef) {
       this.props.getRef(this)
+    }
+
+    if (this.props.onEdit) {
+      this.onEditListener = this.props.onEdit.bind(this)
     }
   }
 
@@ -276,8 +281,8 @@ export class QueryEditor extends React.PureComponent<Props & ReduxProps, {}> {
   }
 
   private onEdit = () => {
-    if (this.props.onEdit) {
-      this.props.onEdit(this.editor.getValue())
+    if (this.onEditListener) {
+      this.onEditListener(this.editor.getValue())
     }
 
     if (!this.ignoreChangeEvent && this.props.onChange) {
