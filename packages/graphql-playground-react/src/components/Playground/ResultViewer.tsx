@@ -11,6 +11,8 @@ import * as ReactDOM from 'react-dom'
 import { styled, withProps } from '../../styled'
 
 export interface Props {
+  schema?: any
+  query?: any
   value: string
   isSubscription: boolean
   hideGutters?: boolean

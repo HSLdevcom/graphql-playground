@@ -134,6 +134,16 @@ class GraphQLEditor extends React.PureComponent<
   private queryVariablesRef
   private httpHeadersRef
 
+  private query: string
+
+  getQuery() {
+    return this.query
+  }
+
+  setQuery(query: string) {
+    this.query = query
+  }
+
   componentDidMount() {
     // Ensure a form of a schema exists (including `null`) and
     // if not, fetch one using an introspection query.
@@ -299,6 +309,8 @@ class GraphQLEditor extends React.PureComponent<
               {this.props.queryRunning &&
                 this.props.responses.size === 0 && <Spinner />}
               <Results
+                schema={this.props.schema}
+                query={this.getQuery}
                 tooltip={this.props.resultTooltip}
                 setRef={this.setResultComponent}
               />
@@ -432,6 +444,7 @@ class GraphQLEditor extends React.PureComponent<
     }
 
     const editor = this.queryEditorComponent.getCodeMirror()
+
     if (editor.hasFocus()) {
       const cursor = editor.getCursor()
       const cursorIndex = editor.indexFromPos(cursor)

@@ -9,6 +9,8 @@ import { styled, withProps } from '../../styled'
 import { ResponseRecord } from '../../state/sessions/reducers'
 
 export interface Props {
+  schema?: any
+  query?: any
   tooltip?: any
   setRef: (ref: any) => void
 }
@@ -24,6 +26,8 @@ const defaultResponseRecord = new ResponseRecord({
 })
 
 const Results: React.SFC<Props & ReduxProps> = ({
+  schema,
+  query,
   tooltip,
   setRef,
   responses,
@@ -44,6 +48,8 @@ const Results: React.SFC<Props & ReduxProps> = ({
             )}
           <ResultWrapper isSubscription={isSubscription}>
             <ResultViewer
+              schema={schema}
+              query={query}
               tooltip={tooltip}
               value={response1.date}
               isSubscription={isSubscription}
@@ -66,6 +72,8 @@ const Results: React.SFC<Props & ReduxProps> = ({
               )}
             <ResultWrapper isSubscription={responses.size > 1}>
               <ResultViewer
+                schema={schema}
+                query={query}
                 tooltip={tooltip}
                 value={response.date}
                 isSubscription={isSubscription}
