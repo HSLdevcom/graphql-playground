@@ -142,6 +142,8 @@ class GraphQLEditor extends React.PureComponent<
   constructor(props) {
     super(props)
     this.state = { query: props.query }
+
+    this.setQuery = this.setQuery.bind(this)
   }
 
   setQuery(query: string) {

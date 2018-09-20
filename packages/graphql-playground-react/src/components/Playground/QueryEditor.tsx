@@ -73,7 +73,7 @@ export class QueryEditor extends React.PureComponent<Props & ReduxProps, {}> {
     }
 
     if (this.props.onEdit) {
-      this.onEditListener = this.props.onEdit.bind(this)
+      this.onEditListener = this.props.onEdit
     }
   }
 
