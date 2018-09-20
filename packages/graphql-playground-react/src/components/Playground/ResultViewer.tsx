@@ -10,6 +10,8 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { styled, withProps } from '../../styled'
 
+import { parse } from 'graphql'
+
 export interface Props {
   schema?: any
   query?: any
@@ -137,6 +139,68 @@ export class ResultViewer extends React.Component<Props, {}> {
    */
   getClientHeight() {
     return this.node && this.node.clientHeight
+  }
+
+  buildTypeMap(schema, query) {
+    const typeMap = new Map()
+
+    query = parse(query)
+    for (const definition of query.definitions) {
+      for (const selection of definition.selectionSet.selections) {
+        this.findTypes(typeMap, [], schema, selection)
+      }
+    }
+
+    return typeMap
+  }
+
+  findTypes(typeMap, path, schema, selection) {
+    path.push({ name: selection.name.value })
+
+    const name = selection.alias ? selection.alias.value : selection.name.value
+
+    if (selection.selectionSet) {
+      typeMap.set(name, new Map())
+
+      for (const subselection of selection.selectionSet.selections) {
+        this.findTypes(typeMap.get(name), path.slice(0), schema, subselection)
+      }
+    } else {
+      typeMap.set(name, this.findTypeFromSchema(path.slice(0), schema))
+    }
+  }
+
+  findTypeFromSchema(path, schema) {
+    let current = path.shift()
+    let fields = Object.values(schema._queryType._fields)
+
+    while (1) {
+      const field: any = fields.shift()
+      if (!field) {
+        return null
+      }
+
+      if (field.name === current.name) {
+        const type = field.type.ofType ? field.type.ofType : field.type
+
+        if (path.length === 0) {
+          return type.name
+        } else if (
+          type._fields ||
+          type.ofType._fields ||
+          type.ofType.ofType._fields
+        ) {
+          fields = type._fields
+            ? Object.values(type._fields)
+            : type.ofType._fields
+              ? Object.values(type.ofType._fields)
+              : Object.values(type.ofType.ofType._fields)
+          current = path.shift()
+        } else {
+          return null
+        }
+      }
+    }
   }
 }
 
