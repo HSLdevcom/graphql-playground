@@ -143,18 +143,112 @@ export class ResultViewer extends React.Component<Props, {}> {
 
   buildTypeMap(schema, query) {
     const typeMap = new Map()
+    const fragmentMap = new Map()
 
     query = parse(query)
     for (const definition of query.definitions) {
+      if (definition.kind !== 'FragmentDefinition') {
+        continue
+      }
+
+      fragmentMap.set(definition.name.value, new Map())
       for (const selection of definition.selectionSet.selections) {
-        this.findTypes(typeMap, [], schema, selection)
+        this.findFragmentTypes(
+          fragmentMap.get(definition.name.value),
+          definition.typeCondition.name.value,
+          schema,
+          [],
+          selection,
+        )
+      }
+    }
+
+    for (const definition of query.definitions) {
+      if (definition.kind !== 'OperationDefinition') {
+        continue
+      }
+      for (const selection of definition.selectionSet.selections) {
+        this.findTypes(typeMap, fragmentMap, [], schema, selection)
       }
     }
 
     return typeMap
   }
 
-  findTypes(typeMap, path, schema, selection) {
+  findFragmentTypes(outputMap, type, schema, path, selection) {
+    path.push({ name: selection.name.value })
+
+    const name = selection.alias ? selection.alias.value : selection.name.value
+
+    if (selection.selectionSet) {
+      outputMap.set(name, new Map())
+
+      for (const subselection of selection.selectionSet.selections) {
+        this.findFragmentTypes(
+          outputMap.get(name),
+          type,
+          schema,
+          path.slice(0),
+          subselection,
+        )
+      }
+    } /*else if (selection.kind === "FragmentSpread") {
+      for (const key of fragmentMap.get(selection.name.value)) {
+        typeMap.set(key, fragmentMap.get(selection.name.value).get(key))  
+      }
+    }*/ else {
+      outputMap.set(
+        name,
+        this.findTypeFromFragment(type, path.slice(0), schema),
+      )
+    }
+  }
+
+  findTypeFromFragment(type, path, schema) {
+    let current = path.shift()
+    let fields
+
+    for (const graphQLType of Object.values(schema._typeMap)) {
+      if ((graphQLType as any).name === type) {
+        fields = Object.values((graphQLType as any)._fields)
+        break
+      }
+    }
+
+    if (!fields) {
+      return null
+    }
+
+    while (1) {
+      const field: any = fields.shift()
+      if (!field) {
+        return null
+      }
+
+      if (field.name === current.name) {
+        const type = field.type.ofType ? field.type.ofType : field.type
+
+        if (path.length === 0) {
+          return type.name
+        } else if (
+          type._fields ||
+          type.ofType._fields ||
+          type.ofType.ofType._fields
+        ) {
+          fields = type._fields
+            ? Object.values(type._fields)
+            : type.ofType._fields
+              ? Object.values(type.ofType._fields)
+              : Object.values(type.ofType.ofType._fields)
+          current = path.shift()
+        } else {
+          return null
+        }
+      }
+    }
+  }
+
+  findTypes(typeMap, fragmentMap, path, schema, selection) {
     path.push({ name: selection.name.value })
 
     const name = selection.alias ? selection.alias.value : selection.name.value
@@ -163,9 +257,19 @@ export class ResultViewer extends React.Component<Props, {}> {
       typeMap.set(name, new Map())
 
       for (const subselection of selection.selectionSet.selections) {
-        this.findTypes(typeMap.get(name), path.slice(0), schema, subselection)
+        this.findTypes(
+          typeMap.get(name),
+          fragmentMap,
+          path.slice(0),
+          schema,
+          subselection,
+        )
       }
-    } else {
+    } /*else if (selection.kind === "FragmentSpread") {
+      for (const key of fragmentMap.get(selection.name.value)) {
+        typeMap.set(key, fragmentMap.get(selection.name.value).get(key))  
+      }
+    }*/ else {
       typeMap.set(name, this.findTypeFromSchema(path.slice(0), schema))
     }
   }
