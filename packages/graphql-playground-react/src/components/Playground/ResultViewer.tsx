@@ -9,6 +9,7 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { styled, withProps } from '../../styled'
+import { mergeMap } from './util/mergeMap'
 
 import { parse } from 'graphql'
 
@@ -143,7 +144,7 @@ export class ResultViewer extends React.Component<Props, {}> {
 
   buildTypeMap(schema, query) {
     const typeMap = new Map()
-    const fragmentMap = new Map()
+    let fragmentMap = new Map()
 
     query = parse(query)
     for (const definition of query.definitions) {
@@ -163,6 +164,8 @@ export class ResultViewer extends React.Component<Props, {}> {
       }
     }
 
+    fragmentMap = this.fixNestedFragments(fragmentMap)
+
     for (const definition of query.definitions) {
       if (definition.kind !== 'OperationDefinition') {
         continue
@@ -173,6 +176,51 @@ export class ResultViewer extends React.Component<Props, {}> {
     }
 
     return typeMap
+  }
+
+  fixNestedFragments(fragmentMap) {
+    const fixedFragments = new Map()
+
+    while (fixedFragments.size !== fragmentMap.size) {
+      for (const key of Array.from(fragmentMap.keys())) {
+        const result = this.fixFragment(fixedFragments, fragmentMap.get(key))
+        fragmentMap.set(key, result.map)
+
+        if (result.fixed) {
+          fixedFragments.set(key, result.map)
+        }
+      }
+    }
+
+    return fixedFragments
+  }
+
+  fixFragment(fixedFragments, subMap) {
+    let fixed = 1
+    let fixedMap = new Map()
+
+    for (const key of Array.from(subMap.keys())) {
+      const value = subMap.get(key)
+
+      if (value instanceof Map) {
+        const result = this.fixFragment(fixedFragments, value)
+        if (!result.fixed) {
+          fixed = 0
+        }
+        fixedMap.set(key, result.map)
+      } else if (!value) {
+        if (fixedFragments.has(key)) {
+          fixedMap = mergeMap(fixedMap, fixedFragments.get(key))
+        } else {
+          fixedMap.set(key, null)
+          fixed = 0
+        }
+      } else {
+        fixedMap.set(key, value)
+      }
+    }
+
+    return { fixed, map: fixedMap }
   }
 
   findFragmentTypes(outputMap, type, schema, path, selection) {
