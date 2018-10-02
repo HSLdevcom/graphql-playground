@@ -143,7 +143,7 @@ export class ResultViewer extends React.Component<Props, {}> {
   }
 
   buildTypeMap(schema, query) {
-    const typeMap = new Map()
+    let typeMap = new Map()
     let fragmentMap = new Map()
 
     query = parse(query)
@@ -171,7 +171,7 @@ export class ResultViewer extends React.Component<Props, {}> {
         continue
       }
       for (const selection of definition.selectionSet.selections) {
-        this.findTypes(typeMap, fragmentMap, [], schema, selection)
+        typeMap = this.findTypes(typeMap, fragmentMap, [], schema, selection)
       }
     }
 
@@ -240,11 +240,7 @@ export class ResultViewer extends React.Component<Props, {}> {
           subselection,
         )
       }
-    } /*else if (selection.kind === "FragmentSpread") {
-      for (const key of fragmentMap.get(selection.name.value)) {
-        typeMap.set(key, fragmentMap.get(selection.name.value).get(key))  
-      }
-    }*/ else {
+    } else {
       outputMap.set(
         name,
         this.findTypeFromFragment(type, path.slice(0), schema),
@@ -305,21 +301,24 @@ export class ResultViewer extends React.Component<Props, {}> {
       typeMap.set(name, new Map())
 
       for (const subselection of selection.selectionSet.selections) {
-        this.findTypes(
-          typeMap.get(name),
-          fragmentMap,
-          path.slice(0),
-          schema,
-          subselection,
+        typeMap.set(
+          name,
+          this.findTypes(
+            typeMap.get(name),
+            fragmentMap,
+            path.slice(0),
+            schema,
+            subselection,
+          ),
         )
       }
-    } /*else if (selection.kind === "FragmentSpread") {
-      for (const key of fragmentMap.get(selection.name.value)) {
-        typeMap.set(key, fragmentMap.get(selection.name.value).get(key))  
-      }
-    }*/ else {
+    } else if (selection.kind === 'FragmentSpread') {
+      typeMap = mergeMap(typeMap, fragmentMap.get(selection.name.value))
+    } else {
       typeMap.set(name, this.findTypeFromSchema(path.slice(0), schema))
     }
+
+    return typeMap
   }
 
   findTypeFromSchema(path, schema) {
