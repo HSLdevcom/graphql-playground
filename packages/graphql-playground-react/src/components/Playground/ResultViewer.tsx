@@ -54,6 +54,8 @@ export class ResultViewer extends React.Component<Props, {}> {
         'info',
         'graphql-results',
         (token, options, cm, pos) => {
+          // this.buildTypeMap(this.props.schema, this.props.query))
+
           const type = null
           const value = null
 
@@ -154,12 +156,15 @@ export class ResultViewer extends React.Component<Props, {}> {
 
       fragmentMap.set(definition.name.value, new Map())
       for (const selection of definition.selectionSet.selections) {
-        this.findFragmentTypes(
-          fragmentMap.get(definition.name.value),
-          definition.typeCondition.name.value,
-          schema,
-          [],
-          selection,
+        fragmentMap.set(
+          definition.name.value,
+          this.findFragmentTypes(
+            fragmentMap.get(definition.name.value),
+            definition.typeCondition.name.value,
+            schema,
+            [],
+            selection,
+          ),
         )
       }
     }
@@ -224,6 +229,28 @@ export class ResultViewer extends React.Component<Props, {}> {
   }
 
   findFragmentTypes(outputMap, type, schema, path, selection) {
+    outputMap = new Map(outputMap)
+
+    if (selection.kind === 'InlineFragment') {
+      let inlineFragmentMap = new Map()
+
+      for (const subselection of selection.selectionSet.selections) {
+        inlineFragmentMap = mergeMap(
+          inlineFragmentMap,
+          this.findFragmentTypes(
+            inlineFragmentMap,
+            selection.typeCondition.name.value,
+            schema,
+            [],
+            subselection,
+          ),
+        )
+      }
+
+      outputMap = mergeMap(outputMap, inlineFragmentMap)
+      return outputMap
+    }
+
     path.push({ name: selection.name.value })
 
     const name = selection.alias ? selection.alias.value : selection.name.value
@@ -232,12 +259,15 @@ export class ResultViewer extends React.Component<Props, {}> {
       outputMap.set(name, new Map())
 
       for (const subselection of selection.selectionSet.selections) {
-        this.findFragmentTypes(
-          outputMap.get(name),
-          type,
-          schema,
-          path.slice(0),
-          subselection,
+        outputMap.set(
+          name,
+          this.findFragmentTypes(
+            outputMap.get(name),
+            type,
+            schema,
+            path.slice(0),
+            subselection,
+          ),
         )
       }
     } else {
@@ -246,6 +276,8 @@ export class ResultViewer extends React.Component<Props, {}> {
         this.findTypeFromFragment(type, path.slice(0), schema),
       )
     }
+
+    return outputMap
   }
 
   findTypeFromFragment(type, path, schema) {
@@ -293,6 +325,25 @@ export class ResultViewer extends React.Component<Props, {}> {
   }
 
   findTypes(typeMap, fragmentMap, path, schema, selection) {
+    if (selection.kind === 'InlineFragment') {
+      let inlineFragmentMap = new Map()
+
+      for (const subselection of selection.selectionSet.selections) {
+        inlineFragmentMap = mergeMap(
+          inlineFragmentMap,
+          this.findFragmentTypes(
+            inlineFragmentMap,
+            selection.typeCondition.name.value,
+            schema,
+            [],
+            subselection,
+          ),
+        )
+      }
+
+      return mergeMap(typeMap, inlineFragmentMap)
+    }
+
     path.push({ name: selection.name.value })
 
     const name = selection.alias ? selection.alias.value : selection.name.value
