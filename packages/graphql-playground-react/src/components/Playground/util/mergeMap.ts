@@ -18,7 +18,12 @@ export function mergeMap(a: Map<any, any>, b: Map<any, any>) {
           output.set(key, arr)
         }
       } else {
-        output.set(key, Array.of(value, output.get(key)))
+        if (Array.isArray(value)) {
+          value.push(output.get(key))
+          output.set(key, value)
+        } else {
+          output.set(key, Array.of(value, output.get(key)))
+        }
       }
     } else {
       output.set(key, value)

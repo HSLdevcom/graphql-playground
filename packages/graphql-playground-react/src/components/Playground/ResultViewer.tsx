@@ -54,7 +54,7 @@ export class ResultViewer extends React.Component<Props, {}> {
         'info',
         'graphql-results',
         (token, options, cm, pos) => {
-          // this.buildTypeMap(this.props.schema, this.props.query))
+          // console.log(this.buildTypeMap(this.props.schema, this.props.query))
 
           const type = null
           const value = null
@@ -221,7 +221,18 @@ export class ResultViewer extends React.Component<Props, {}> {
           fixed = 0
         }
       } else {
-        fixedMap.set(key, value)
+        if (fixedMap.has(key)) {
+          // Fixed map can already have a value for the key if a nested fragment with same key was processed earlier
+          const currentValue = fixedMap.get(key)
+          if (Array.isArray(currentValue)) {
+            currentValue.push(value)
+            fixedMap.set(key, currentValue)
+          } else {
+            fixedMap.set(key, [currentValue, value])
+          }
+        } else {
+          fixedMap.set(key, value)
+        }
       }
     }
 
@@ -229,8 +240,6 @@ export class ResultViewer extends React.Component<Props, {}> {
   }
 
   findFragmentTypes(outputMap, type, schema, path, selection) {
-    outputMap = new Map(outputMap)
-
     if (selection.kind === 'InlineFragment') {
       let inlineFragmentMap = new Map()
 
@@ -238,7 +247,7 @@ export class ResultViewer extends React.Component<Props, {}> {
         inlineFragmentMap = mergeMap(
           inlineFragmentMap,
           this.findFragmentTypes(
-            inlineFragmentMap,
+            new Map(inlineFragmentMap),
             selection.typeCondition.name.value,
             schema,
             [],
@@ -332,7 +341,7 @@ export class ResultViewer extends React.Component<Props, {}> {
         inlineFragmentMap = mergeMap(
           inlineFragmentMap,
           this.findFragmentTypes(
-            inlineFragmentMap,
+            new Map(inlineFragmentMap),
             selection.typeCondition.name.value,
             schema,
             [],
