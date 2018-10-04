@@ -19,6 +19,10 @@ import {
 } from '../../state/sessions/selectors'
 import { toJS } from './util/toJS'
 
+export interface Props {
+  onRun: () => void
+}
+
 export interface ReduxProps {
   runQuery: (operationName?: string) => void
   stopQuery: (sessionId: string) => void
@@ -40,7 +44,7 @@ let firstTime = true
  * What a nice round shiny button. Shows a drop-down when there are multiple
  * queries to run.
  */
-class ExecuteButton extends React.Component<ReduxProps, State> {
+class ExecuteButton extends React.Component<Props & ReduxProps, State> {
   constructor(props) {
     super(props)
 
@@ -133,6 +137,7 @@ class ExecuteButton extends React.Component<ReduxProps, State> {
     if (this.props.queryRunning) {
       this.props.stopQuery(this.props.sessionId)
     } else {
+      this.props.onRun()
       this.props.runQuery()
     }
   }
@@ -142,6 +147,7 @@ class ExecuteButton extends React.Component<ReduxProps, State> {
     if (!operation) {
       return
     }
+    this.props.onRun()
     this.props.runQuery(operation.name && operation.name.value)
   }
 

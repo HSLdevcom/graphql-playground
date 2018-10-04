@@ -139,15 +139,24 @@ class GraphQLEditor extends React.PureComponent<
   private queryVariablesRef
   private httpHeadersRef
 
+  private query: string
+
   constructor(props) {
     super(props)
+    this.query = props.query
     this.state = { query: props.query }
 
     this.setQuery = this.setQuery.bind(this)
+    this.updateQueryState = this.updateQueryState.bind(this)
   }
 
   setQuery(query: string) {
-    this.setState({ query })
+    this.query = query
+  }
+
+  // Update 'query' variable in component state when the query is executed
+  updateQueryState() {
+    this.setState({ query: this.query })
   }
 
   componentDidMount() {
@@ -312,7 +321,7 @@ class GraphQLEditor extends React.PureComponent<
             </QueryWrap>
             <ResultWrap>
               <ResultDragBar ref={this.setResponseResizer} />
-              <ExecuteButton />
+              <ExecuteButton onRun={this.updateQueryState} />
               {this.props.queryRunning &&
                 this.props.responses.size === 0 && <Spinner />}
               <Results
@@ -456,6 +465,8 @@ class GraphQLEditor extends React.PureComponent<
       const cursor = editor.getCursor()
       const cursorIndex = editor.indexFromPos(cursor)
       this.props.runQueryAtPosition(cursorIndex)
+
+      this.updateQueryState()
     }
   }
 
