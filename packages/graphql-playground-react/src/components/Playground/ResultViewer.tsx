@@ -36,6 +36,8 @@ export class ResultViewer extends React.Component<Props, {}> {
   private node: any
   private viewer: any
 
+  private typeMap: any
+
   componentDidMount() {
     const CodeMirror = require('codemirror')
     require('codemirror/addon/fold/foldgutter')
@@ -54,10 +56,34 @@ export class ResultViewer extends React.Component<Props, {}> {
         'info',
         'graphql-results',
         (token, options, cm, pos) => {
-          // console.log(this.buildTypeMap(this.props.schema, this.props.query))
+          const path: any[] = []
+          let state = token.state
+          while (state.prevState) {
+            if (state.kind === 'ObjectField') {
+              path.push(state.name.replace(/\"/g, ''))
+            }
+            state = state.prevState
+          }
 
-          const type = null
-          const value = null
+          let type
+
+          if (this.typeMap) {
+            let current = path.pop()
+            let map = this.typeMap
+            while (path.length > 0) {
+              map = map.get(current)
+              current = path.pop()
+            }
+            type = map.get(current)
+
+            if (Array.isArray(type)) {
+              if (type => type.every(e => e === type[0])) {
+                type = type[0]
+              }
+            }
+          }
+
+          const value = token.string
 
           const Tooltip = this.props.tooltip
           ReactDOM.render(<Tooltip value={value} type={type} />, tooltipDiv)
@@ -104,10 +130,17 @@ export class ResultViewer extends React.Component<Props, {}> {
   }
 
   shouldComponentUpdate(nextProps) {
-    return this.props.value !== nextProps.value
+    return (
+      this.props.value !== nextProps.value ||
+      this.props.query !== nextProps.query
+    )
   }
 
   componentDidUpdate() {
+    if (this.props.query) {
+      this.typeMap = this.buildTypeMap(this.props.schema, this.props.query)
+    }
+
     const value = this.props.value || ''
     this.viewer.setValue(value)
   }
