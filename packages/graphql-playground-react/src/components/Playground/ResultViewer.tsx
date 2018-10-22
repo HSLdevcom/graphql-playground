@@ -8,7 +8,7 @@
 
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { styled, withProps } from '../../styled'
+import { styled } from '../../styled'
 import { mergeMap } from './util/mergeMap'
 
 import { parse } from 'graphql'
@@ -151,10 +151,7 @@ export class ResultViewer extends React.Component<Props, {}> {
 
   render() {
     return (
-      <Result
-        innerRef={this.setRef}
-        isSubscription={this.props.isSubscription}
-      />
+      <Result ref={this.setRef} isSubscription={this.props.isSubscription} />
     )
   }
 
@@ -452,7 +449,7 @@ interface ResultProps {
   isSubscription: boolean
 }
 
-const Result = withProps<ResultProps>()(styled.div)`
+const Result = styled<ResultProps, 'div'>('div')`
   position: relative;
   display: flex;
   flex: 1;
@@ -463,6 +460,9 @@ const Result = withProps<ResultProps>()(styled.div)`
     box-sizing: border-box;
     background: none;
     padding-left: 38px;
+  }
+  .CodeMirror-cursor {
+    display: none !important;
   }
   .CodeMirror-scroll {
     overflow: auto !important;

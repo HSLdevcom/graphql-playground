@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { createStructuredSelector } from 'reselect'
 import { getResponses } from '../../state/sessions/selectors'
 import { List } from 'immutable'
-import { styled, withProps } from '../../styled'
+import { styled } from '../../styled'
 import { ResponseRecord } from '../../state/sessions/reducers'
 
 export interface Props {
@@ -30,10 +30,7 @@ export class Results extends React.Component<Props & ReduxProps> {
     const response1 = this.props.responses.get(0) || defaultResponseRecord
     const isSubscription = this.props.responses.size > 1
     return (
-      <ResultWindow
-        innerRef={this.props.setRef}
-        isSubscription={isSubscription}
-      >
+      <ResultWindow ref={this.props.setRef} isSubscription={isSubscription}>
         {this.props.responses.size <= 1 ? (
           <Response key={'first'} isSubscription={isSubscription}>
             {this.props.responses.size > 1 &&
@@ -91,7 +88,7 @@ const mapStateToProps = createStructuredSelector({
 
 export default connect(mapStateToProps)(Results)
 
-const ResultWindow = withProps<ResultWrapperProps>()(styled.div)`
+const ResultWindow = styled<ResultWrapperProps, 'div'>('div')`
   flex: 1;
   height: ${props => (props.isSubscription ? 'auto' : '100%')};
   position: relative;
@@ -127,7 +124,7 @@ const ResultWindow = withProps<ResultWrapperProps>()(styled.div)`
   }
 `
 
-const Response = withProps<ResultWrapperProps>()(styled.div)`
+const Response = styled<ResultWrapperProps, 'div'>('div')`
   position: relative;
   display: flex;
   flex: 1;
@@ -164,7 +161,7 @@ interface ResultWrapperProps {
   isSubscription: boolean
 }
 
-const ResultWrapper = withProps<ResultWrapperProps>()(styled.div)`
+const ResultWrapper = styled<ResultWrapperProps, 'div'>('div')`
   display: flex;
   flex: 1;
   height: ${props => (props.isSubscription ? `auto` : '100%')};

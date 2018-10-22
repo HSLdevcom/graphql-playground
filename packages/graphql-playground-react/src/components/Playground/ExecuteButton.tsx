@@ -8,7 +8,7 @@
 
 import * as React from 'react'
 import ExecuteButtonOperation from './ExecuteButtonOperation'
-import { withProps, styled } from '../../styled'
+import { styled } from '../../styled'
 import { connect } from 'react-redux'
 import { runQuery, stopQuery } from '../../state/sessions/actions'
 import { createStructuredSelector } from 'reselect'
@@ -210,7 +210,7 @@ interface ButtonProps {
   isRunning: boolean
 }
 
-const Button = withProps<ButtonProps>()(styled.div)`
+const Button = styled<ButtonProps, 'div'>('div')`
   width: 60px;
   height: 60px;
 
@@ -232,7 +232,7 @@ const Button = withProps<ButtonProps>()(styled.div)`
   }
 
   &:hover {
-    background-color:${p =>
+    background-color: ${p =>
       p.isRunning
         ? p.theme.editorColours.executeButtonSubscriptionHover
         : p.theme.editorColours.executeButtonHover};

@@ -240,7 +240,7 @@ export class QueryEditor extends React.PureComponent<Props & ReduxProps, {}> {
   render() {
     return (
       <EditorWrapper>
-        <Editor innerRef={this.setRef} />
+        <Editor ref={this.setRef} />
       </EditorWrapper>
     )
   }
