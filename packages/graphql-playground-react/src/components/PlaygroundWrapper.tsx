@@ -63,6 +63,7 @@ export interface PlaygroundWrapperProps {
   codeTheme?: EditorColours
   workspaceName?: string
   headers?: any
+  resultTooltip?: any
 }
 
 export interface ReduxProps {
@@ -396,6 +397,7 @@ class PlaygroundWrapper extends React.Component<
               }
               createApolloLink={this.props.createApolloLink}
               schema={this.state.schema}
+              resultTooltip={this.props.resultTooltip}
             />
           </App>
         </ThemeProvider>
