@@ -27,6 +27,7 @@ export interface Props {
   history?: any
   match?: any
   headers?: any
+  resultTooltip?: any
 }
 
 export interface State {
@@ -135,6 +136,7 @@ class GraphQLBinApp extends React.Component<Props & ReduxProps, State> {
             endpoint={endpoint}
             headers={this.state.headers}
             subscriptionEndpoint={subscriptionEndpoint}
+            resultTooltip={this.props.resultTooltip}
           />
         )}
       </Wrapper>
