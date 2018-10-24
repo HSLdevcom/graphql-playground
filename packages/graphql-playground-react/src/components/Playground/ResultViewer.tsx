@@ -56,8 +56,17 @@ export class ResultViewer extends React.Component<Props, {}> {
         'info',
         'graphql-results',
         (token, options, cm, pos) => {
+          if (
+            token.type === 'punctuation' ||
+            token.type === 'def' ||
+            token.type === 'property'
+          ) {
+            return null
+          }
+
           const path: any[] = []
           let state = token.state
+
           while (state.prevState) {
             if (state.kind === 'ObjectField') {
               path.push(state.name.replace(/\"/g, ''))
@@ -86,6 +95,7 @@ export class ResultViewer extends React.Component<Props, {}> {
           const value = token.string
 
           const Tooltip = this.props.tooltip
+
           ReactDOM.render(<Tooltip value={value} type={type} />, tooltipDiv)
           return tooltipDiv
         },
