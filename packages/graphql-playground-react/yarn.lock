@@ -1982,9 +1982,17 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemirror-graphql@^0.6.11, "codemirror-graphql@https://github.com/HSLdevcom/codemirror-graphql#state_name":
+codemirror-graphql@^0.6.11:
   version "0.6.12"
   resolved "https://github.com/HSLdevcom/codemirror-graphql#4e76cbacdaf6873f5bd96c3141b1ffcbd918048a"
+  integrity sha512-7YP956JubbWkmk9QqKy62CZgdGbEulHNJkz2/aUDTpsE1KrQtRrT9WzStJaxAOEX2k4wUOpojUX2ItPxa69kFA==
+  dependencies:
+    graphql-language-service-interface "^1.0.18"
+    graphql-language-service-parser "^1.0.18"
+
+"codemirror-graphql@https://github.com/HSLdevcom/codemirror-graphql#popup_position":
+  version "0.6.12"
+  resolved "https://github.com/HSLdevcom/codemirror-graphql#ea9b8d037fb94397c8fec5dd3806dfce1056cbdd"
   dependencies:
     graphql-language-service-interface "^1.0.18"
     graphql-language-service-parser "^1.0.18"
