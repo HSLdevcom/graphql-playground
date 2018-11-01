@@ -53,7 +53,7 @@ export class ResultViewer extends React.Component<Props, {}> {
       require('codemirror-graphql/utils/info-addon-popup-at-mouse')
       const tooltipDiv = document.createElement('div')
       CodeMirror.registerHelper(
-        'info-at-mouse',
+        'info',
         'graphql-results',
         (token, options, cm, pos) => {
           if (
