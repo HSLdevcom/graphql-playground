@@ -1992,7 +1992,7 @@ codemirror-graphql@^0.6.11:
 
 "codemirror-graphql@https://github.com/HSLdevcom/codemirror-graphql#popup_position":
   version "0.6.12"
-  resolved "https://github.com/HSLdevcom/codemirror-graphql#42bd2c1cbea8fc48e66b76e56309b9eecf6f20b2"
+  resolved "https://github.com/HSLdevcom/codemirror-graphql#b3cf70543010cf989db31cd3aea134749501ba63"
   dependencies:
     graphql-language-service-interface "^1.0.18"
     graphql-language-service-parser "^1.0.18"
