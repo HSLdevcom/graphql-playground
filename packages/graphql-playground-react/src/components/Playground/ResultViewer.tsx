@@ -94,9 +94,12 @@ export class ResultViewer extends React.Component<Props, {}> {
 
           const value = token.string
 
-          const Tooltip = this.props.tooltip
+          const Tooltip = this.props.tooltip(type)
+          if (!Tooltip) {
+            return null
+          }
 
-          ReactDOM.render(<Tooltip value={value} type={type} />, tooltipDiv)
+          ReactDOM.render(<Tooltip value={value} />, tooltipDiv)
           return tooltipDiv
         },
       )
