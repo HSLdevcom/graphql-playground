@@ -38,6 +38,14 @@ export class ResultViewer extends React.Component<Props, {}> {
 
   private typeMap: any
 
+  constructor(props) {
+    super(props)
+
+    if (this.props.query) {
+      this.typeMap = this.buildTypeMap(this.props.schema, this.props.query)
+    }
+  }
+
   componentDidMount() {
     const CodeMirror = require('codemirror')
     require('codemirror/addon/fold/foldgutter')
