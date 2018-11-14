@@ -20,7 +20,7 @@ import {
 } from '../../state/sessions/selectors'
 import EditorWrapper from './EditorWrapper'
 import { styled } from '../../styled'
-
+import { isIframe } from '../../utils'
 /**
  * QueryEditor
  *
@@ -105,7 +105,7 @@ export class QueryEditor extends React.PureComponent<Props & ReduxProps, {}> {
     gutters.push('CodeMirror-foldgutter')
 
     this.editor = CodeMirror(this.node, {
-      autofocus: true,
+      autofocus: !isIframe() ? true : false,
       value: this.props.value || '',
       lineNumbers: true,
       tabSize: 2,
@@ -211,8 +211,10 @@ export class QueryEditor extends React.PureComponent<Props & ReduxProps, {}> {
   componentWillReceiveProps(nextProps) {
     if (this.props.sessionId !== nextProps.sessionId) {
       this.closeCompletion()
-      this.editor.focus()
       this.updateSessionScrollTop()
+      if (!isIframe()) {
+        this.editor.focus()
+      }
     }
   }
 
@@ -325,8 +327,7 @@ const Editor = styled.div`
   position: relative;
 
   .CodeMirror {
-    padding-left: 12px;
-    width: calc(100% - 12px);
+    width: 100%;
     background: ${p => p.theme.editorColours.editorBackground};
   }
 `
